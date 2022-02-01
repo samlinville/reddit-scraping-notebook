@@ -1,3 +1,7 @@
+check.sh~
+nohup.out
+scraper.log
+scraper.py~
 env.json
 /.ipynb_checkpoints
 .ipynb_checkpoints/data-01292022191230-checkpoint.csv
