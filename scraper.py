@@ -10,22 +10,23 @@ import os
 import pandas as pd
 import shutil
 
-posts = pd.read_csv('posts.csv', dtype={'Title': 'str',
+posts = pd.read_csv('posts-i-imgur.csv', dtype={'Title': 'str',
                                         'ID': 'str',
                                         'Date': 'str',
                                         'Upvotes': 'int',
                                         'URL': 'str',
                                         'Status': 'str'
                                        })
-posts = posts.iloc[: , 1:]
-#posts = posts.sort_values(by=['Upvotes'], ascending=False)
-#header_list = ["Title", "ID", "Date", "Upvotes", "URL", "Status"]
-#posts = posts.reindex(columns = header_list)
-posts = posts[posts['URL'].str.contains("https://i.redd.it/")]
-posts = posts.reset_index(drop=True)
+# # posts = posts.iloc[: , 1:]
+# posts = posts.sort_values(by=['Upvotes'], ascending=False)
+# header_list = ["Title", "ID", "Date", "Upvotes", "URL", "Status"]
+# posts = posts.reindex(columns = header_list)
+# posts = posts[posts['URL'].str.contains("//i.imgur.com/")]
+# posts = posts.reset_index(drop=True)
+# posts.to_csv("posts-i-imgur.csv")
 
 current_directory = os.getcwd()
-new_dir = "pics" # -" + datetime.now().strftime("%m%d%Y%H%M%S")
+new_dir = "pics-test" # -" + datetime.now().strftime("%m%d%Y%H%M%S")
 final_directory = os.path.join(current_directory, new_dir)
 if not os.path.exists(final_directory):
    os.makedirs(final_directory)
@@ -34,7 +35,6 @@ processed = 0
 skipped = 0
 failed = 0
 success = 0
-status = ""
 exceptions = 0
 
 for index, row in posts.iterrows():
@@ -44,25 +44,21 @@ for index, row in posts.iterrows():
     if row['Status'] == "Failed":
         failed += 1
         processed += 1
-        status = "skipped"
         continue
         
     if row['Status'] == "BadURL":
         skipped += 1
         processed += 1
-        status = "skipped"
         continue
         
     if row['Status'] == "Downloaded":
         success += 1
         processed += 1
-        status = "downloaded"
         continue
         
     if exists(final_directory + '/' + filename + '.jpg'):
         success += 1
         processed += 1
-        status = "downloaded"
         continue
         
     matches = ["://i.redd.it", "://i.imgur.com"]
@@ -70,7 +66,6 @@ for index, row in posts.iterrows():
         skipped += 1
         processed += 1  
         posts.at[index,'Status'] = "BadURL"
-        status = "bad url"
         continue
     try:
         res = requests.get(url, stream = True, timeout=20)
@@ -85,12 +80,10 @@ for index, row in posts.iterrows():
             shutil.copyfileobj(res.raw, f)
         success += 1
         posts.at[index,'Status'] = "Downloaded"
-        status = "downloaded"
         
     else:
         failed += 1
         posts.at[index,'Status'] = "Failed"
-        status = "failed"
         
         
     processed += 1
@@ -108,4 +101,4 @@ for index, row in posts.iterrows():
     
     time.sleep(1)
     if (index % 100 == 0):
-        posts.to_csv("posts.csv")
+        posts.to_csv("posts-i-imgur.csv")
