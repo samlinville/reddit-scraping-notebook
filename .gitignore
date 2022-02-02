@@ -4,6 +4,7 @@ scraper.log
 scraper.py~
 env.json
 /.ipynb_checkpoints
+.ipynb_checkpoints/
 .ipynb_checkpoints/data-01292022191230-checkpoint.csv
 .ipynb_checkpoints/env-checkpoint.json
 .ipynb_checkpoints/s8n1pj-checkpoint
